@@ -1,2 +1,2 @@
 # wpu-bot-2.0
-official discord bot for web programming unpas 
+Official discord bot for web programming unpas 
