@@ -1,5 +1,10 @@
+import discord
 from discord.ext import commands
 import random, time
+import aiohttp
+import json
+
+#dibawah ada ubah warna embed
 
 class Misc(commands.Cog):
   def __init__(self,bot):
@@ -42,7 +47,7 @@ class Misc(commands.Cog):
 
   @commands.command(aliases=['pick'])
   async def choose(self, ctx, *, choices: str):
-    await ctx.send('I choose: ``{}``'.format(random.choice(choices.split("|"))))
+    await ctx.send('I choose: {}'.format(random.choice(choices.split("|"))))
   
   @commands.command()
   async def regional(self,ctx, *, msg):
@@ -58,6 +63,25 @@ class Misc(commands.Cog):
     message = await ctx.send("🏓 Pong!")
     ping = (time.monotonic() - before) * 1000
     await message.edit(content=f"🏓 Pong!  `{int(ping)}ms`")
+
+  @commands.command()
+  async def poll(self, ctx, *, title):
+    embed = discord.Embed(title="A new poll has been created!", description=f"{title}", color=discord.Colour.blurple())
+    embed.set_footer(text=f"Poll created by: {ctx.message.author} • React to vote!")
+    embed_message = await ctx.send(embed=embed)
+    await embed_message.add_reaction("👍")
+    await embed_message.add_reaction("👎")
+    await embed_message.add_reaction("🤷")
+
+  @commands.command(name="bitcoin")
+  async def bitcoin(self, ctx):
+    url = "https://api.coindesk.com/v1/bpi/currentprice/BTC.json"
+    async with aiohttp.ClientSession() as session:
+      raw_response = await session.get(url)
+      response = await raw_response.text()
+      response = json.loads(response)
+      embed = discord.Embed(title=":information_source: Info",description=f"Bitcoin price is: ${response['bpi']['USD']['rate']}", color=discord.Colour.blurple())
+      await ctx.send(embed=embed)
 
 def setup(bot):
   bot.add_cog(Misc(bot))
