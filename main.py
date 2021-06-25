@@ -1,15 +1,16 @@
 import discord
 from discord.ext import commands, tasks
 from discord.utils import get
-from discord.ext.commands import CommandNotFound
 import DiscordUtils
-import os, asyncio
+import os, os.path, asyncio
+from PIL import Image, ImageFont, ImageDraw
 from random import choice
 
 #status         =848750771323404318
 #commands       =854593500137652226
 #commands-error =855754099840647178
 #log-perkenalan =854593552390029322
+#warn-log       =856758248416870450
 
 #server minet:
   #selamat datang   =850305113554026497
@@ -50,7 +51,7 @@ async def help(ctx):
   embed1.set_thumbnail(url='https://cdn.discordapp.com/attachments/831360289274069012/855781549630816287/logo-putih-polos.png')
   embed1.add_field(name="__Github:__", value="https://github.com/LuminetteBourgeons/wpu-bot-2.0\n", inline=False)
   embed1.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
-  embed2=discord.Embed(title='<:wpublack:723675025894539294> __Informations:__', description="‎ ‎ ‎ ‎ ・*Userinfo:* shows you informations about a user\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; userinfo @user` / `; userinfo`\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ > @user is optional\n‎ ‎ ‎ ‎ ・*Avatar:* shows you informations about a user's avatar\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; avatar @user` / `; avatar`\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ > @user is optional\n‎ ‎ ‎ ‎ ・*Serverinfo:* shows you informations about the server\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; serverinfo`\n‎ ‎ ‎ ‎ ・*Servericon:* shows you the server icon\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; servericon`\n‎ ‎ ‎ ‎ ・*Permissions:* shows you the user's permissions in the server\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; perms` / `; permissions`", color=orange)
+  embed2=discord.Embed(title='<:wpublack:723675025894539294> __Informations:__', description="‎ ‎ ‎ ‎ ・*Userinfo:* shows you informations about a user\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; userinfo @user` / `; userinfo`\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ > @user is optional\n‎ ‎ ‎ ‎ ・*Avatar:* shows you informations about a user's avatar\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; avatar @user` / `; avatar`\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ > @user is optional\n‎ ‎ ‎ ‎ ・*Serverinfo:* shows you informations about the server\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; serverinfo`\n‎ ‎ ‎ ‎ ・*Servericon:* shows you the server icon\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; servericon`\n‎ ‎ ‎ ‎ ・*Permissions:* shows you the user's permissions in the server\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; perms` / `; permissions`\n‎ ‎ ‎ ‎ ・*Roleinfo:* shows you the role's informations in the server\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; role <@role>` / `; roleinfo <@role>`\n‎ ‎ ‎ ‎ ・*Channelinfo:* shows you the channel's informations in the server\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; channel <#channel>` / `; channelinfo <#channel>`", color=orange)
   embed2.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
   embed3=discord.Embed(title='<:wpublack:723675025894539294> __Miscellaneous:__', description="‎ ‎ ‎ ‎ ・*Help:* shows you this message\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; help`\n‎ ‎ ‎ ‎ ・*Calculate:* just a common calculator...\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; calc <operation>` / `; calculate <operation>`\n‎ ‎ ‎ ‎ ・*Picking out some choice:* I'll choose for you\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; choose <opt. 1>|<opt.2>|<opt.3>|<...>` /\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; pick <opt. 1>|<opt.2>|<opt.3>|<...>`\n‎ ‎ ‎ ‎ ・*Making regional texts:* simply turn `this` to 🇹 🇭 🇮 🇸\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; regional <text>`\n‎ ‎ ‎ ‎ ・*Reminder:* \n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; reminder <time> <text>`\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ Example:`; reminder 50m Cookies are ready!`\n‎ ‎ ‎ ‎ ・*Ping:* \n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; ping`\n‎ ‎ ‎ ‎ ・*Poll:* creates a poll where members can vote.\n‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `; poll`", color=orange)
   embed3.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
@@ -86,14 +87,7 @@ async def on_ready():
   
 @bot.event
 async def on_command_error(ctx, error):
-  if isinstance(error, CommandNotFound):
-    await ctx.send(f'Command not found! Use `;help` for the list of commands!', delete_after=3)
-    channel = bot.get_channel(855754099840647178)
-    embed = discord.Embed(title=f"ERROR -- CommandNotFound", description=f"{ctx.message.content}",colour=discord.Color.red())
-    embed.set_footer(text=f"{ctx.author.name}", icon_url=ctx.author.avatar_url)
-    await channel.send('––––––––––––––––––––––––––––––––––––––––––––––––',embed=embed)
-    return
-  elif isinstance(error, commands.MissingPermissions):
+  if isinstance(error, commands.MissingPermissions):
     embed = discord.Embed(title="Error!", description="You are missing the permission `" + ", ".join(error.missing_perms) + "` to execute this command!", color=discord.Colour.red())
     await ctx.send(embed=embed, delete_after=7)
     channel = bot.get_channel(855754099840647178)
@@ -127,7 +121,17 @@ async def on_command_error(ctx, error):
 async def on_member_join(member):
   if member.guild.id == 786492151058923520:
     channel = bot.get_channel(848812370334711848)
-    await channel.send("Halo, {}! Selamat datang di server discord **Web Programming Unpas**. Sebelumnya, silakan kunjungi <#850305113554026497> untuk membaca __Peraturan__, dan mengikuti instruksi selanjutnya. ".format (member.mention))
+    img = Image.open("Welcome.png")
+    font = ImageFont.truetype("BebasNeue-Regular.ttf", 100)
+    draw = ImageDraw.Draw(img)
+    text = ("Welcome,\n {}\n Enjoy your stay!".format (member.name))
+    fill_color = (255, 255, 255)
+    stroke_color = (35, 150, 200)
+    draw.text((75,175), text, fill=fill_color, stroke_width=1, stroke_fill=stroke_color,font=font)
+    img.save("./welcome/{}.png".format (member.name))
+    embed=discord.Embed(title=f'Halo, {member.name}', description='<:wpublack:723675025894539294> Selamat datang di server discord\nWeb Programming UNPAS\n\nSebelum itu, silakan membuka <#850305113554026497> untuk membaca **Peraturan** server kami!\n\nDilanjutkan ke <#848778311119536128> untuk berkenalan **sesuai format**\n\nJika ada pertanyaan, jangan malu untuk bertanya kepada __Ketua Kelas__',colour=orange)
+    embed.set_thumbnail(url=member.avatar_url)
+    await channel.send (embed=embed, file=discord.File("./welcome/{}.png".format (member.name)))
 
 @bot.event
 async def on_message(message):
@@ -138,19 +142,6 @@ async def on_message(message):
   if bot.user.mentioned_in(message):
     await message.channel.send(f'My Prefix is `{bot.command_prefix}`')
     await bot.process_commands(message)
-  #buat di channel 'selamat-datang'
-  if message.channel.id == 850305113554026497: 
-    channel = bot.get_channel(850305113554026497)
-    if message.content.lower().startswith('Web Programming UNPAS'):
-      user = message.author
-      role = get(user.guild.roles, name="Mahasiswa Baru")
-      await user.add_roles(role)
-      await message.delete()
-      await channel.send(f"Terimakasih {message.author.mention}, sudah membaca peraturan. Silakan, dilanjutkan ke <#722024507707228160>!", delete_after=3)
-      await bot.process_commands(message)
-    else:
-      await message.delete()
-      await bot.process_commands(message)
   #verifikasi form
   if message.channel.id == 848778311119536128:
     channel = bot.get_channel(848778311119536128)
