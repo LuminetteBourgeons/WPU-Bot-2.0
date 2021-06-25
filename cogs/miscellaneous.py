@@ -73,6 +73,7 @@ class Misc(commands.Cog):
     await embed_message.add_reaction("👎")
     await embed_message.add_reaction("🤷")
 
+    #ga penting tp yauda la ya wkwk
   @commands.command(name="bitcoin")
   async def bitcoin(self, ctx):
     url = "https://api.coindesk.com/v1/bpi/currentprice/BTC.json"
