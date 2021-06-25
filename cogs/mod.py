@@ -78,7 +78,7 @@ class Mod(commands.Cog):
     await ctx.send(embed=embed)
 
   @commands.command()
-  @commands.has_permissions(administrator=True)
+  @commands.has_permissions(manage_messages=True, manage_channels=True)
   async def delete(self, ctx, limit=500, member: discord.Member=None):
     await ctx.message.delete()
     msg = []
@@ -108,19 +108,19 @@ class Mod(commands.Cog):
     await ctx.send("DM sent!")
 
   @commands.command()
-  @commands.has_permissions(administrator=True)
-  async def warn(self, ctx, member: discord.member, *, reason="Not specified"):
-    if member is None:
-      embed = discord.Embed(color=orange, title=f'{ctx.author.name}',description='Please specify the user you want to warn\n Use:`+warn @user`')
-      await ctx.send(embed=embed)
-    embed1 = discord.Embed(color=orange, title=f'{member}, you have been warned!', description=f'by {ctx.author.name}')
-    embed1.add_field(name="Reason:", value=reason)
-    await ctx.send(embed=embed1)
-    channel = ctx.bot.get_channel(854589548864340009)
-    embed2 = discord.Embed(color=orange, title=f'{member}, have been warned!', description=f'by {ctx.author.name}')
-    embed2.add_field(name="Reason:", value=reason)
-    embed2.add_field(name="Server:", value=f'{ctx.guild.name}')
-    await channel.send('––––––––––––––––––––––––––––––––––––––––––––––––',embed=embed2)
+  @commands.has_permissions(manage_messages=True)
+  async def warn(self, ctx, member: discord.Member, *, reason="Not specified"):
+    embed = discord.Embed(title="User Warned!", description=f"**{member}** was warned by **{ctx.message.author}**!", color=orange)
+    embed.add_field(name="Reason:",value=reason)
+    await ctx.send(embed=embed)
+    try:
+      await member.send(f"You were warned by **{ctx.message.author}**!\nReason: {reason}")
+    except:
+      pass
+    channel = ctx.bot.get_channel(856758248416870450)
+    embed = discord.Embed(title=f"WARNED", description=f"{member}\nReason: {reason}\nBy:",colour=discord.Color.red())
+    embed.set_footer(text=f"{ctx.author.name}", icon_url=ctx.author.avatar_url)
+    await channel.send('––––––––––––––––––––––––––––––––––––––––––––––––',embed=embed)
   @commands.command()
   @commands.has_permissions(kick_members=True)
   async def kick(self, ctx, member: discord.Member, *, reason="Not specified"):
@@ -162,39 +162,29 @@ class Mod(commands.Cog):
   @commands.command()
   @commands.has_permissions(administrator=True)
   async def mute(self, ctx, member: discord.Member):
-    if member.guild.id == 775568951101882398:
-      role = discord.utils.get(ctx.guild.roles, name="🤫 Shh, MUTED!")
+    role = discord.utils.get(ctx.guild.roles, name="Muted")
+    guild = ctx.guild
+    if role not in guild.roles:
+      perms = discord.Permissions(send_messages=False, speak=False)
+      await guild.create_role(name="Muted", permissions=perms)
       await member.add_roles(role)
-      await ctx.send(f"Muted {member} >:D")
+      await ctx.send(f"Muted {member}")
     else:
-      role = discord.utils.get(ctx.guild.roles, name="Muted")
-      guild = ctx.guild
-      if role not in guild.roles:
-        perms = discord.Permissions(send_messages=False, speak=False)
-        await guild.create_role(name="Muted", permissions=perms)
-        await member.add_roles(role)
-        await ctx.send(f"Muted {member} >:D")
-      else:
-        await member.add_roles(role) 
-        await ctx.send(f"Muted {member} >:D")
+      await member.add_roles(role) 
+      await ctx.send(f"Muted {member}")
   @commands.command()
   @commands.has_permissions(administrator=True)
   async def unmute(self, ctx, member: discord.Member):
-    if member.guild.id == 775568951101882398:
-      role = discord.utils.get(ctx.guild.roles, name="🤫 Shh, MUTED!")
+    role = discord.utils.get(ctx.guild.roles, name="Muted")
+    guild = ctx.guild
+    if role not in guild.roles:
+      perms = discord.Permissions(send_messages=False, speak=False)
+      await guild.create_role(name="Muted", permissions=perms)
       await member.remove_roles(role)
       await ctx.send(f"Unmuted {member}")
     else:
-      role = discord.utils.get(ctx.guild.roles, name="Muted")
-      guild = ctx.guild
-      if role not in guild.roles:
-        perms = discord.Permissions(send_messages=False, speak=False)
-        await guild.create_role(name="Muted", permissions=perms)
-        await member.remove_roles(role)
-        await ctx.send(f"Unmuted {member}")
-      else:
-        await member.remove_roles(role) 
-        await ctx.send(f"Unmuted {member}")
+      await member.remove_roles(role) 
+      await ctx.send(f"Unmuted {member}")
 
   @commands.command()
   @commands.has_permissions(manage_nicknames=True)
