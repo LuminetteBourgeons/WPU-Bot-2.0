@@ -48,7 +48,6 @@ class Info(commands.Cog):
     embed.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
     await ctx.send(embed=embed)
 
-
   @commands.command(aliases=['perms'])
   async def permissions(self, ctx, user: discord.Member = None):
     if user is None:
@@ -57,7 +56,7 @@ class Info(commands.Cog):
     perms = '`,\n `'.join([str(p[0]).replace("_", " ").title() for p in user.guild_permissions if p[1]])
     embed = discord.Embed(title=f'{user.name}' + "'s Permissions", description=f'`{perms}`', color = orange)
     embed.set_thumbnail(url=avatar)
-    embed.set_footer(text=f"Serving: {ctx.author.name}", icon_url=ctx.author.avatar_url)
+    embed.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
     await ctx.send(embed=embed)
 
   @commands.command()
@@ -66,7 +65,7 @@ class Info(commands.Cog):
     embed.set_image(url=ctx.guild.icon_url)
     embed.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
     await ctx.send(embed=embed)
-  
+
   @commands.command()
   async def serverinfo(self, ctx):
     name = f'{ctx.guild.name}'
@@ -95,6 +94,49 @@ class Info(commands.Cog):
     embed.add_field(name="‎", value="‎", inline=True)
     embed.add_field(name="Members Informations:", value=f"All members: `{total_member}`\nMembers: `{humans}`\nBots: `{bots}`\nOnline members: `{online_members}`\nOffline members: `{offline_members}`", inline=True)
     embed.add_field(name="Server Informations:", value=f"Total roles: `{roles}`\nCategories: `{categories}`\nTotal channels: `{channels}`\nText channels: `{text_channels}`\nVoice channels: `{voice_channels}`\nBoost level: `{boost_level}`\nTotal boost: `{total_boosts}`\nServer created at: {time}", inline=True)
+    embed.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
+    await ctx.send(embed=embed)
+
+  @commands.command(aliases=["role"])
+  async def roleinfo(self, ctx, *, role: discord.Role):
+    since_created = (ctx.message.created_at - role.created_at).days
+    role_created = role.created_at.strftime("%d %b %Y %H:%M")
+    created_on = "{} ({} days ago)".format(role_created, since_created)
+    members = ''
+    i = 0
+    for user in role.members:
+      members += f'{user.name}, '
+      i+=1
+      if i > 30:
+        break
+    embed = discord.Embed(colour=orange)
+    embed.set_author(name=role.name)
+    embed.add_field(name="Users", value=len(role.members))
+    embed.add_field(name="Mentionable", value=role.mentionable)
+    embed.add_field(name="Hoist", value=role.hoist)
+    embed.add_field(name="Position", value=role.position)
+    embed.add_field(name="Managed", value=role.managed)
+    embed.add_field(name="Colour", value=role.colour)
+    embed.add_field(name='Creation Date', value=created_on)
+    embed.add_field(name='Members', value=members[:-2], inline=False)
+    embed.add_field(name=f'Role ID', value=f'{role.id}', inline=False)
+    embed.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
+    await ctx.send(embed=embed)
+
+  @commands.command(aliases=["channel"])
+  async def channelinfo(self, ctx, channel: discord.TextChannel = None):
+    if channel is None:
+      channel = ctx.message.channel
+    embed = discord.Embed(color=orange, description=channel.mention)
+    embed.add_field(name="Name", value=channel.name)
+    embed.add_field(name="Server", value=channel.guild)
+    embed.add_field(name="ID", value=channel.id)
+    embed.add_field(name="Category ID", value=channel.category_id)
+    embed.add_field(name="Position", value=channel.position)
+    embed.add_field(name="NSFW", value=str(channel.is_nsfw()))
+    embed.add_field(name="Members (cached)", value=str(len(channel.members)))
+    embed.add_field(name="Category", value=channel.category)
+    embed.add_field(name="Created", value=channel.created_at.strftime("%d %b %Y %H:%M"))
     embed.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
     await ctx.send(embed=embed)
 
