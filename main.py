@@ -23,6 +23,19 @@ from random import choice
   #lobby            =758649904012197908
   #perkenalan       =722024507707228160
 
+immune=[
+  376337405185097728, #sandhikagalih
+  809244553768861706, #luminette
+  738959539251970048, #levianthz
+  628868756634075167, #avip syaifulloh
+  167174392139350017, #manh21
+  556334409842688023, #kyo
+  613001683030769686, #r4m∆iЙ
+  843803437930119168, #PG
+  351681050713391104, #alfat
+  857795309266796595 #ramset
+]
+
 orange=discord.Colour.blurple()
 
 presence= [
@@ -119,8 +132,8 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_member_join(member):
-  if member.guild.id == 786492151058923520:
-    channel = bot.get_channel(848812370334711848)
+  if member.guild.id == 722002048643497994:
+    channel = bot.get_channel(758649904012197908)
     img = Image.open("Welcome.png")
     font = ImageFont.truetype("BebasNeue-Regular.ttf", 100)
     draw = ImageDraw.Draw(img)
@@ -140,11 +153,16 @@ async def on_message(message):
   await bot.process_commands(message)
   #ngasi prefix kalo ditag
   if bot.user.mentioned_in(message):
-    await message.channel.send(f'My Prefix is `{bot.command_prefix}`')
-    await bot.process_commands(message)
+    if message.author.id in immune:
+      return
+    elif (message.content):
+      await message.channel.send(f'My Prefix is `{bot.command_prefix}`')
+      await bot.process_commands(message)
   #verifikasi form
-  if message.channel.id == 848778311119536128:
-    channel = bot.get_channel(848778311119536128)
+  if message.channel.id == 722024507707228160:
+    if message.author.id in immune:
+      return
+    channel = bot.get_channel(722024507707228160)
     raw = message.content.split('\n')
     nama = ''
     asal = ''
@@ -240,7 +258,7 @@ async def servers(ctx):
 async def presence_change():
   await asyncio.sleep(10)
   await bot.change_presence(activity=choice(presence))
-  channel = bot.get_channel(854593444072390657)
+  channel = bot.get_channel(848750771323404318)
   await channel.send('Changing Presence')
   print("Changing Presence")
 @presence_change.before_loop
