@@ -61,7 +61,7 @@ bot.remove_command('help')
 
 @bot.command()
 async def help(ctx):
-  embed1=discord.Embed(title="__*WPU bot's commands:*__", description=f"Prefix: `{bot.command_prefix}`\n<:WPU:858306984239169566> Develop by: `Luminette#0103`\nWith special helps from: `MANH21#5839`\n<:discordpy:850714601527050251> Using discord.py <:python:778794123544887348>\n‎\n\nFor Moderation commands, please use `modhelp` ‎ ", color=orange)
+  embed1=discord.Embed(title="__*WPU bot's commands:*__", description=f"Prefix: `{bot.command_prefix}`\n<:WPU:858306984239169566> Develop by: `Luminette#0103`\nWith special helps from: `MANH21#5839`\n<:discordpy:850714601527050251> Using discord.py <:py:858307461244125215>\n‎\n\nFor Moderation commands, please use `;modhelp` ‎ ", color=orange)
   embed1.set_thumbnail(url='https://cdn.discordapp.com/attachments/831360289274069012/855781549630816287/logo-putih-polos.png')
   embed1.add_field(name="__Github:__", value="https://github.com/LuminetteBourgeons/wpu-bot-2.0\n", inline=False)
   embed1.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
@@ -281,19 +281,12 @@ async def pstop(ctx):
   else:
     await ctx.send("You are not allowed to use this command!")
 
-@bot.command()
-async def shutdown(ctx):
-  if ctx.author.id == 809244553768861706 or ctx.author.id == 743042741461712897:
-    await ctx.send('shutting down... good night...')
-    await bot.close()
-    
 extensions = [ 
   'cogs.miscellaneous', 
   'cogs.mod', 
   'cogs.reminder', 
   'cogs.voice', 
-  'cogs.info',
-  'cogs.modmail'  
+  'cogs.info'  
 ]
 
 if __name__ == '__main__':
