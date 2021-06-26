@@ -281,6 +281,12 @@ async def pstop(ctx):
   else:
     await ctx.send("You are not allowed to use this command!")
 
+@bot.command()
+async def shutdown(ctx):
+  if ctx.author.id == 809244553768861706 or ctx.author.id == 743042741461712897:
+    await ctx.send('shutting down... good night...')
+    await bot.close()
+    
 extensions = [ 
   'cogs.miscellaneous', 
   'cogs.mod', 
