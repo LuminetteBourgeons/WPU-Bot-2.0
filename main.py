@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands, tasks
 from discord.utils import get
 import DiscordUtils
-from keep_alive import keep_alive
 import os, os.path, asyncio
 from PIL import Image, ImageFont, ImageDraw
 from random import choice
@@ -300,5 +299,4 @@ extensions = [
 if __name__ == '__main__':
   for ext in extensions:
     bot.load_extension(ext)
-keep_alive()
 bot.run(os.getenv('TOKEN'))
