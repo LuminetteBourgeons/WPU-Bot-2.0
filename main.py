@@ -293,7 +293,8 @@ extensions = [
   'cogs.mod', 
   'cogs.reminder', 
   'cogs.voice', 
-  'cogs.info'  
+  'cogs.info',
+  'cogs.modmail'  
 ]
 
 if __name__ == '__main__':
