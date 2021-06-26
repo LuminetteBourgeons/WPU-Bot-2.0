@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands, tasks
 from discord.utils import get
 import DiscordUtils
+from keep_alive import keep_alive
 import os, os.path, asyncio
 from PIL import Image, ImageFont, ImageDraw
 from random import choice
@@ -41,7 +42,8 @@ orange=discord.Colour.blurple()
 presence= [
     discord.Activity(type=discord.ActivityType.playing, name=("Jangan lupa titik koma")),
     discord.Activity(type=discord.ActivityType.playing, name=("prefix: ';'")),
-    discord.Activity(type=discord.ActivityType.watching, name=("Mahasiswa"))
+    discord.Activity(type=discord.ActivityType.watching, name=("Mahasiswa")),
+    discord.Activity(type=discord.ActivityType.watching, name=("WPU Members"))
 ]
 
 PREFIX = [
@@ -60,7 +62,7 @@ bot.remove_command('help')
 
 @bot.command()
 async def help(ctx):
-  embed1=discord.Embed(title="__*WPU bot's commands:*__", description=f"Prefix: `{bot.command_prefix}`\n<:wpublack:723675025894539294> Develop by: `Luminette#0103`\nWith special helps from: `MANH21#5839`\n<:discordpy:850714601527050251> Using discord.py <:python:778794123544887348>\n‎\n\nFor Moderation commands, please use `modhelp` ‎ ", color=orange)
+  embed1=discord.Embed(title="__*WPU bot's commands:*__", description=f"Prefix: `{bot.command_prefix}`\n<:WPU:858306984239169566> Develop by: `Luminette#0103`\nWith special helps from: `MANH21#5839`\n<:discordpy:850714601527050251> Using discord.py <:python:778794123544887348>\n‎\n\nFor Moderation commands, please use `modhelp` ‎ ", color=orange)
   embed1.set_thumbnail(url='https://cdn.discordapp.com/attachments/831360289274069012/855781549630816287/logo-putih-polos.png')
   embed1.add_field(name="__Github:__", value="https://github.com/LuminetteBourgeons/wpu-bot-2.0\n", inline=False)
   embed1.set_footer(text=f"Command used by: {ctx.author.name}", icon_url=ctx.author.avatar_url)
@@ -91,6 +93,7 @@ async def invite (ctx):
 
 @bot.event
 async def on_ready():
+  #channel status
   channel = bot.get_channel(848750771323404318)
   await channel.send('Rebooting')
   await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name=("booting...")))
@@ -142,7 +145,7 @@ async def on_member_join(member):
     stroke_color = (35, 150, 200)
     draw.text((75,175), text, fill=fill_color, stroke_width=1, stroke_fill=stroke_color,font=font)
     img.save("./welcome/{}.png".format (member.name))
-    embed=discord.Embed(title=f'Halo, {member.name}', description='<:wpublack:723675025894539294> Selamat datang di server discord\nWeb Programming UNPAS\n\nSebelum itu, silakan membuka <#850305113554026497> untuk membaca **Peraturan** server kami!\n\nDilanjutkan ke <#848778311119536128> untuk berkenalan **sesuai format**\n\nJika ada pertanyaan, jangan malu untuk bertanya kepada __Ketua Kelas__',colour=orange)
+    embed=discord.Embed(title=f'Halo, {member.name}', description='<:wpublack:723675025894539294> Selamat datang di server discord\nWeb Programming UNPAS\n\nSebelum itu, silakan membuka <#745872171825627157> untuk membaca **Peraturan** server kami!\n\nDilanjutkan ke <#722024507707228160> untuk berkenalan **sesuai format**\n\nJika ada pertanyaan, jangan malu untuk bertanya kepada __Ketua Kelas__',colour=orange)
     embed.set_thumbnail(url=member.avatar_url)
     await channel.send (embed=embed, file=discord.File("./welcome/{}.png".format (member.name)))
 
@@ -211,7 +214,7 @@ async def on_message(message):
 #ini buat ngeremind format formnya
 @tasks.loop(minutes=20)
 async def perkenalan():
-    channel = bot.get_channel(848778311119536128)
+    channel = bot.get_channel(722024507707228160)
     embed=discord.Embed(title="Halo! Untuk perkenalan, bisa copy format dibawah ini ya!", description="```Siapa nama kamu?\nAsal dari mana?\nSekolah / Kuliah di mana?\nBekerja di mana?\nDari mana tau WPU?\nBahasa pemrograman favorit?\nHobby / Interest?```", colour=discord.Color.orange())
     await channel.send(embed=embed)
 @perkenalan.before_loop
@@ -279,6 +282,12 @@ async def pstop(ctx):
   else:
     await ctx.send("You are not allowed to use this command!")
 
+@bot.command()
+async def shutdown(ctx):
+  if ctx.author.id == 809244553768861706 or ctx.author.id == 743042741461712897:
+    await ctx.send('shutting down... good night...')
+    await bot.close()
+    
 extensions = [ 
   'cogs.miscellaneous', 
   'cogs.mod', 
@@ -290,4 +299,5 @@ extensions = [
 if __name__ == '__main__':
   for ext in extensions:
     bot.load_extension(ext)
+keep_alive()
 bot.run(os.getenv('TOKEN'))
