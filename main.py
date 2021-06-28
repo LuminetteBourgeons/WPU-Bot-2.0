@@ -146,7 +146,7 @@ async def on_member_join(member):
     img.save("./welcome/{}.png".format (member.name))
     embed=discord.Embed(title=f'Halo, {member.name}', description='<:wpublack:723675025894539294> Selamat datang di server discord\nWeb Programming UNPAS\n\nSebelum itu, silakan membuka <#745872171825627157> untuk membaca **Peraturan** server kami!\n\nDilanjutkan ke <#722024507707228160> untuk berkenalan **sesuai format**\n\nJika ada pertanyaan, jangan malu untuk bertanya kepada __Ketua Kelas__',colour=orange)
     embed.set_thumbnail(url=member.avatar_url)
-    await channel.send (embed=embed, file=discord.File("./welcome/{}.png".format (member.name)))
+    await channel.send (f"{member.mention} Selamat datang!", embed=embed, file=discord.File("./welcome/{}.png".format (member.name)))
 
 @bot.event
 async def on_message(message):
@@ -199,7 +199,7 @@ async def on_message(message):
     else:
       await message.add_reaction('\U00002705')
       user = message.author
-      role = get(user.guild.roles, name="Mahasiswa")
+      role = get(user.guild.roles, id=730328477160439878)
       await user.add_roles(role)
       await channel.send(f"Terimakasih {message.author.mention}, sudah perkenalan sesuai format. Salam kenal!")
       await bot.process_commands(message)
