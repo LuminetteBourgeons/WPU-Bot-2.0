@@ -51,11 +51,8 @@ class Misc(commands.Cog):
   
   @commands.command()
   async def regional(self,ctx, *, msg):
-    await ctx.message.delete()
-    msg = list(msg)
-    regional_list = [self.regionals[x.lower()] if x.isalnum() or x in ["!", "?"] else x for x in msg]
-    regional_output = '\u200b'.join(regional_list)
-    await ctx.send(regional_output)
+    pass
+    #disalahgunakan >:(
     
   @commands.command()
   async def ping(self, ctx):
