@@ -43,7 +43,7 @@ class Misc(commands.Cog):
     
   @commands.command(aliases=['calc'])
   async def calculate(self, ctx, *, q):
-    await ctx.send(f"{q}={eval(q)}")
+    await ctx.send(f"menghadeh")
 
   @commands.command(aliases=['pick'])
   async def choose(self, ctx, *, choices: str):
