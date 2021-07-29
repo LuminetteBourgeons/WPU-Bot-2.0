@@ -7,6 +7,4 @@
 | 2.0.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
-
-we thank you if you find a security hole, you can report it by creating an [issues](https://LuminetteBourgeons/WPU-Bot-2.0/issues),
-and we try to fix it as soon as possible and run well.
+thank you for notifying the security holes that you have found, you can report them by opening the [issue](https://github.com/LuminetteBourgeons/WPU-Bot-2.0/issues)
