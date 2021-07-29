@@ -1,4 +1,6 @@
 # WPU BOT 2.0
+[![codeanalysis](https://img.shields.io/github/workflow/status/LuminetteBourgeons/WPU-Bot-2.0/CodeAnalysis?label=Code%20Analysis&style=for-the-badge)](https://github.com/LuminetteBourgeons/WPU-Bot-2.0/actions/workflows/analysis.yml)
+[![Supp Server](https://img.shields.io/discord/786492151058923520.svg?logo=discord&style=for-the-badge)](https://discord.gg/TKDAb8DjT9)
 
 [![WPU Server](https://media.discordapp.net/attachments/758660110003863574/854216528273473536/wpu.png)](https://discord.gg/wpu)
 
@@ -9,11 +11,6 @@
 Use `;help` for all the commands, 
 
 or simply just scroll down :D
-
-
-__**Join the support server**__:
-
-[![Supp Server](https://img.shields.io/discord/786492151058923520.svg?logo=discord&style=for-the-badge)](https://discord.gg/TKDAb8DjT9)
 
 <br>
 
