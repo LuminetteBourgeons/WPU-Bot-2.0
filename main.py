@@ -355,7 +355,7 @@ async def on_command(ctx):
     channel = bot.get_channel(854593500137652226)
     embed = discord.Embed(
         title=f"{ctx.author.name} used a command!",
-        description=f"{ctx.message.content}",
+        description=ctx.message.content,
         colour=discord.Color.orange(),
     )
     await channel.send("––––––––––––––––––––––––––––––––––––––––––––––––", embed=embed)
@@ -366,7 +366,7 @@ async def on_command_completion(ctx):
     channel = bot.get_channel(854593500137652226)
     embed = discord.Embed(
         title=f"Completed {ctx.author.name}'s command!",
-        description=f"{ctx.message.content}",
+        description=ctx.message.content,
         colour=discord.Color.gold(),
     )
     await channel.send(embed=embed)
