@@ -160,16 +160,6 @@ async def on_command_error(ctx, error):
             color=discord.Colour.red(),
         )
         await ctx.send(embed=embed, delete_after=7)
-        channel = bot.get_channel(855754099840647178)
-        embed = discord.Embed(
-            title=f"ERROR -- commands.MissingPermissions",
-            description=f"{ctx.message.content}",
-            colour=discord.Color.red(),
-        )
-        embed.set_footer(text=f"{ctx.author.name}", icon_url=ctx.author.avatar_url)
-        await channel.send(
-            "––––––––––––––––––––––––––––––––––––––––––––––––", embed=embed
-        )
     elif isinstance(error, commands.MissingRequiredArgument):
         embed = discord.Embed(
             title="Error!",
@@ -177,9 +167,19 @@ async def on_command_error(ctx, error):
             color=discord.Colour.red(),
         )
         await ctx.send(embed=embed, delete_after=7)
+
+    if isinstance(
+        error,
+        (
+            commands.MissingPermissions,
+            commands.MissingRequiredArgument,
+            commands.ChannelNotFound,
+            commands.MemberNotFound,
+        ),
+    ):
         channel = bot.get_channel(855754099840647178)
         embed = discord.Embed(
-            title=f"ERROR -- commands.MissingRequiredArgument",
+            title=f"ERROR -- {error.__class__.__qualname__}",
             description=f"{ctx.message.content}",
             colour=discord.Color.red(),
         )
@@ -187,32 +187,11 @@ async def on_command_error(ctx, error):
         await channel.send(
             "––––––––––––––––––––––––––––––––––––––––––––––––", embed=embed
         )
-    elif isinstance(error, commands.ChannelNotFound):
-        await ctx.send(f"Channel not found!", delete_after=7)
-        channel = bot.get_channel(855754099840647178)
-        embed = discord.Embed(
-            title=f"ERROR -- commands.ChannelNotFound",
-            description=f"{ctx.message.content}",
-            colour=discord.Color.red(),
-        )
-        embed.set_footer(text=f"{ctx.author.name}", icon_url=ctx.author.avatar_url)
-        await channel.send(
-            "––––––––––––––––––––––––––––––––––––––––––––––––", embed=embed
-        )
+
+    # Don't re-raise converter errors
+    if isinstance(error, (commands.ChannelNotFound, commands.MemberNotFound)):
         return
-    elif isinstance(error, commands.MemberNotFound):
-        await ctx.send(f"Member not found!", delete_after=7)
-        channel = bot.get_channel(855754099840647178)
-        embed = discord.Embed(
-            title=f"ERROR -- commands.MemberNotFound",
-            description=f"{ctx.message.content}",
-            colour=discord.Color.red(),
-        )
-        embed.set_footer(text=f"{ctx.author.name}", icon_url=ctx.author.avatar_url)
-        await channel.send(
-            "––––––––––––––––––––––––––––––––––––––––––––––––", embed=embed
-        )
-        return
+
     raise error
 
 
