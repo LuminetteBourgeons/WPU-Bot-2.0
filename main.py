@@ -266,7 +266,12 @@ async def on_message(message):
         "hobby / interest",
     ]
     for data in raw:
-        tanya = data.split("?").pop(0).lower()
+        split = data.split("?")
+        tanya = split.pop(0).lower()
+        if not split or not split.pop(0).strip():
+            # Jawaban tidak valid
+            break
+
         try:
             pertanyaan.remove(tanya)
         except ValueError:
