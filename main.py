@@ -204,8 +204,19 @@ async def on_member_join(member):
     def wrapper():
         img = Image.open("Welcome.png")
         font = ImageFont.truetype("BebasNeue-Regular.ttf", 100)
+        nama = member.name
+        lebar, *_ = font.getsize(nama)
+        if lebar > 500:
+            dot, *_ = font.getsize("...")
+
+            while lebar + dot > 500:
+                nama = nama[:-1]
+                lebar, *_ = font.getsize(nama)
+
+            nama += "..."
+
         draw = ImageDraw.Draw(img)
-        text = "Welcome,\n {}\n Enjoy your stay!".format(member.name)
+        text = f"Welcome,\n {nama}\n Enjoy your stay!"
         fill_color = (255, 255, 255)
         stroke_color = (35, 150, 200)
         draw.text(
