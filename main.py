@@ -217,7 +217,8 @@ async def on_member_join(member):
             font=font,
         )
         buffer = BytesIO()
-        img.save(fp, "PNG")
+        img.save(buffer, "PNG")
+        buffer.seek(0)
         return buffer
 
     fp = await bot.loop.run_in_executor(None, wrapper)
