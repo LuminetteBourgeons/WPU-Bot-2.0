@@ -241,7 +241,7 @@ async def on_member_join(member):
             colour=orange,
         )
         .set_thumbnail(url=member.avatar_url)
-        .set_image(url=f"attachment://{filename}")
+        .set_image(url=f"attachment://{filename.replace(' ', '_')}")
     )
     channel = bot.get_channel(758649904012197908)
     await channel.send(
