@@ -1,5 +1,6 @@
 import asyncio
 import os
+from io import BytesIO
 from random import choice
 
 import discord
@@ -197,8 +198,10 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_member_join(member):
-    if member.guild.id == 722002048643497994:
-        channel = bot.get_channel(758649904012197908)
+    if member.guild.id != 722002048643497994:
+        return
+
+    def wrapper():
         img = Image.open("Welcome.png")
         font = ImageFont.truetype("BebasNeue-Regular.ttf", 100)
         draw = ImageDraw.Draw(img)
@@ -213,18 +216,27 @@ async def on_member_join(member):
             stroke_fill=stroke_color,
             font=font,
         )
-        img.save("./welcome/{}.png".format(member.name))
-        embed = discord.Embed(
+        buffer = BytesIO()
+        img.save(fp, "PNG")
+        return buffer
+
+    fp = await bot.loop.run_in_executor(None, wrapper)
+    filename = f"{member.name}.png"
+    embed = (
+        discord.Embed(
             title=f"Halo, {member.name}",
             description="<:wpublack:723675025894539294> Selamat datang di server discord\nWeb Programming UNPAS\n\nSebelum itu, silakan membuka <#745872171825627157> untuk membaca **Peraturan** server kami!\n\nDilanjutkan ke <#722024507707228160> untuk berkenalan **sesuai format**\n\nJika ada pertanyaan, jangan malu untuk bertanya kepada __Ketua Kelas__",
             colour=orange,
         )
-        embed.set_thumbnail(url=member.avatar_url)
-        await channel.send(
-            f"{member.mention} Selamat datang!",
-            embed=embed,
-            file=discord.File("./welcome/{}.png".format(member.name)),
-        )
+        .set_thumbnail(url=member.avatar_url)
+        .set_image(url=f"attachment://{filename}")
+    )
+    channel = bot.get_channel(758649904012197908)
+    await channel.send(
+        f"{member.mention} Selamat datang!",
+        embed=embed,
+        file=discord.File(fp, filename),
+    )
 
 
 @bot.listen()
