@@ -5,7 +5,6 @@ from random import choice
 import discord
 import DiscordUtils
 from discord.ext import commands, tasks
-from discord.utils import get
 from PIL import Image, ImageDraw, ImageFont
 
 # status         =848750771323404318
@@ -249,83 +248,63 @@ async def on_member_join(member):
         )
 
 
-@bot.event
+@bot.listen()
 async def on_message(message):
     if message.author == bot.user:
         return
-    await bot.process_commands(message)
+
+    if message.author.id in immune:
+        return
+
     # ngasi prefix kalo ditag
     if bot.user.mentioned_in(message):
-        if message.author.id in immune:
-            return
-        elif message.content:
-            await message.channel.send(f"My Prefix is `{bot.command_prefix}`")
-            await bot.process_commands(message)
+        await message.channel.send(f"My Prefix is `{bot.command_prefix}`")
+
     # verifikasi form
-    if message.channel.id == 722024507707228160:
-        if message.author.id in immune:
-            return
-        channel = bot.get_channel(722024507707228160)
-        raw = message.content.split("\n")
-        nama = ""
-        asal = ""
-        sekolah = ""
-        kerja = ""
-        tau = ""
-        bahasa = ""
-        hobby = ""
-        for data in raw:
-            data = data.split("?")
-            if (data[0]).lower() == "siapa nama kamu":
-                nama = data[1]
-            elif (data[0]).lower() == "asal dari mana":
-                asal = data[1]
-            elif (data[0]).lower() == "sekolah / kuliah di mana":
-                sekolah = data[1]
-            elif (data[0]).lower() == "bekerja di mana":
-                kerja = data[1]
-            elif (data[0]).lower() == "dari mana tau wpu":
-                tau = data[1]
-            elif (data[0]).lower() == "bahasa pemrograman favorit":
-                bahasa = data[1]
-            elif (data[0]).lower() == "hobby / interest":
-                hobby = data[1]
-        if (
-            nama == ""
-            or asal == ""
-            or sekolah == ""
-            or kerja == ""
-            or tau == ""
-            or bahasa == ""
-            or hobby == ""
-        ):
-            await message.add_reaction("\U0000274c")
-            salah = await channel.send(
-                f"{message.author.mention}, tolong masukkan data sesuai format!"
-            )
-            await asyncio.sleep(5)
-            await message.delete()
-            await salah.delete()
-            await bot.process_commands(message)
-        else:
-            await message.add_reaction("\U00002705")
-            user = message.author
-            role = get(user.guild.roles, id=730328477160439878)
-            await user.add_roles(role)
-            await channel.send(
-                f"Terimakasih {message.author.mention}, sudah perkenalan sesuai format. Salam kenal!"
-            )
-            await bot.process_commands(message)
-            channel1 = bot.get_channel(854593552390029322)
-            channel2 = bot.get_channel(855763615093358603)
-            embed = discord.Embed(
-                color=orange, title="Perkenalan", description=f"```{message.content}```"
-            )
-            embed.set_author(
-                name=message.author.name, icon_url=message.author.avatar_url
-            )
-            await channel1.send(embed=embed)
-            await channel2.send(embed=embed)
+    if message.channel.id != 722024507707228160:
+        return
+
+    raw = message.content.split("\n")
+    pertanyaan = [
+        "siapa nama kamu",
+        "asal dari mana",
+        "sekolah / kuliah di mana",
+        "bekerja di mana",
+        "dari mana tau wpu",
+        "bahasa pemrograman favorit",
+        "hobby / interest",
+    ]
+    for data in raw:
+        tanya = data.split("?").pop(0).lower()
+        try:
+            pertanyaan.remove(tanya)
+        except ValueError:
+            continue
+
+    if pertanyaan:
+        await message.add_reaction("\U0000274c")
+        salah = await message.channel.send(
+            f"{message.author.mention}, tolong masukkan data sesuai format!"
+        )
+        await asyncio.sleep(5)
+        await message.delete()
+        await salah.delete()
+        return
+
+    await message.add_reaction("\U00002705")
+    role = message.guild.get_role(730328477160439878)
+    await message.author.add_roles(role)
+    await message.channel.send(
+        f"Terimakasih {message.author.mention}, sudah perkenalan sesuai format. Salam kenal!"
+    )
+    channel1 = bot.get_channel(854593552390029322)
+    channel2 = bot.get_channel(855763615093358603)
+    embed = discord.Embed(
+        color=orange, title="Perkenalan", description=f"```{message.content}```"
+    )
+    embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+    await channel1.send(embed=embed)
+    await channel2.send(embed=embed)
 
 
 # ini buat ngeremind format formnya
