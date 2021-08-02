@@ -1,10 +1,12 @@
+import asyncio
+import os
+from random import choice
+
 import discord
+import DiscordUtils
 from discord.ext import commands, tasks
 from discord.utils import get
-import DiscordUtils
-import os, asyncio
-from PIL import Image, ImageFont, ImageDraw
-from random import choice
+from PIL import Image, ImageDraw, ImageFont
 
 # status         =848750771323404318
 # commands       =854593500137652226
@@ -288,7 +290,15 @@ async def on_message(message):
                 bahasa = data[1]
             elif (data[0]).lower() == "hobby / interest":
                 hobby = data[1]
-        if (nama == "" or asal == "" or sekolah == "" or kerja == "" or tau == "" or bahasa == "" or hobby == ""):
+        if (
+            nama == ""
+            or asal == ""
+            or sekolah == ""
+            or kerja == ""
+            or tau == ""
+            or bahasa == ""
+            or hobby == ""
+        ):
             await message.add_reaction("\U0000274c")
             salah = await channel.send(
                 f"{message.author.mention}, tolong masukkan data sesuai format!"
