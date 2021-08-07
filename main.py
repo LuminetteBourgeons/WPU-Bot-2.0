@@ -1,10 +1,12 @@
-import discord
-from discord.ext import commands, tasks
-from discord.utils import get
-import DiscordUtils
-import os, asyncio
-from PIL import Image, ImageFont, ImageDraw
+import asyncio
+import os
+from io import BytesIO
 from random import choice
+
+import discord
+import DiscordUtils
+from discord.ext import commands, tasks
+from PIL import Image, ImageDraw, ImageFont
 
 # status         =848750771323404318
 # commands       =854593500137652226
@@ -159,16 +161,6 @@ async def on_command_error(ctx, error):
             color=discord.Colour.red(),
         )
         await ctx.send(embed=embed, delete_after=7)
-        channel = bot.get_channel(855754099840647178)
-        embed = discord.Embed(
-            title=f"ERROR -- commands.MissingPermissions",
-            description=f"{ctx.message.content}",
-            colour=discord.Color.red(),
-        )
-        embed.set_footer(text=f"{ctx.author.name}", icon_url=ctx.author.avatar_url)
-        await channel.send(
-            "––––––––––––––––––––––––––––––––––––––––––––––––", embed=embed
-        )
     elif isinstance(error, commands.MissingRequiredArgument):
         embed = discord.Embed(
             title="Error!",
@@ -176,9 +168,19 @@ async def on_command_error(ctx, error):
             color=discord.Colour.red(),
         )
         await ctx.send(embed=embed, delete_after=7)
+
+    if isinstance(
+        error,
+        (
+            commands.MissingPermissions,
+            commands.MissingRequiredArgument,
+            commands.ChannelNotFound,
+            commands.MemberNotFound,
+        ),
+    ):
         channel = bot.get_channel(855754099840647178)
         embed = discord.Embed(
-            title=f"ERROR -- commands.MissingRequiredArgument",
+            title=f"ERROR -- {error.__class__.__qualname__}",
             description=f"{ctx.message.content}",
             colour=discord.Color.red(),
         )
@@ -186,43 +188,35 @@ async def on_command_error(ctx, error):
         await channel.send(
             "––––––––––––––––––––––––––––––––––––––––––––––––", embed=embed
         )
-    elif isinstance(error, commands.ChannelNotFound):
-        await ctx.send(f"Channel not found!", delete_after=7)
-        channel = bot.get_channel(855754099840647178)
-        embed = discord.Embed(
-            title=f"ERROR -- commands.ChannelNotFound",
-            description=f"{ctx.message.content}",
-            colour=discord.Color.red(),
-        )
-        embed.set_footer(text=f"{ctx.author.name}", icon_url=ctx.author.avatar_url)
-        await channel.send(
-            "––––––––––––––––––––––––––––––––––––––––––––––––", embed=embed
-        )
+
+    # Don't re-raise converter errors
+    if isinstance(error, (commands.ChannelNotFound, commands.MemberNotFound)):
         return
-    elif isinstance(error, commands.MemberNotFound):
-        await ctx.send(f"Member not found!", delete_after=7)
-        channel = bot.get_channel(855754099840647178)
-        embed = discord.Embed(
-            title=f"ERROR -- commands.MemberNotFound",
-            description=f"{ctx.message.content}",
-            colour=discord.Color.red(),
-        )
-        embed.set_footer(text=f"{ctx.author.name}", icon_url=ctx.author.avatar_url)
-        await channel.send(
-            "––––––––––––––––––––––––––––––––––––––––––––––––", embed=embed
-        )
-        return
+
     raise error
 
 
 @bot.event
 async def on_member_join(member):
-    if member.guild.id == 722002048643497994:
-        channel = bot.get_channel(758649904012197908)
+    if member.guild.id != 722002048643497994:
+        return
+
+    def wrapper():
         img = Image.open("Welcome.png")
         font = ImageFont.truetype("BebasNeue-Regular.ttf", 100)
+        nama = member.name
+        lebar, *_ = font.getsize(nama)
+        if lebar > 500:
+            dot, *_ = font.getsize("...")
+
+            while lebar + dot > 500:
+                nama = nama[:-1]
+                lebar, *_ = font.getsize(nama)
+
+            nama += "..."
+
         draw = ImageDraw.Draw(img)
-        text = "Welcome,\n {}\n Enjoy your stay!".format(member.name)
+        text = f"Welcome,\n {nama}\n Enjoy your stay!"
         fill_color = (255, 255, 255)
         stroke_color = (35, 150, 200)
         draw.text(
@@ -233,89 +227,92 @@ async def on_member_join(member):
             stroke_fill=stroke_color,
             font=font,
         )
-        img.save("./welcome/{}.png".format(member.name))
-        embed = discord.Embed(
+        buffer = BytesIO()
+        img.save(buffer, "PNG")
+        buffer.seek(0)
+        return buffer
+
+    fp = await bot.loop.run_in_executor(None, wrapper)
+    filename = f"{member.name}.png"
+    embed = (
+        discord.Embed(
             title=f"Halo, {member.name}",
             description="<:wpublack:723675025894539294> Selamat datang di server discord\nWeb Programming UNPAS\n\nSebelum itu, silakan membuka <#745872171825627157> untuk membaca **Peraturan** server kami!\n\nDilanjutkan ke <#722024507707228160> untuk berkenalan **sesuai format**\n\nJika ada pertanyaan, jangan malu untuk bertanya kepada __Ketua Kelas__",
             colour=orange,
         )
-        embed.set_thumbnail(url=member.avatar_url)
-        await channel.send(
-            f"{member.mention} Selamat datang!",
-            embed=embed,
-            file=discord.File("./welcome/{}.png".format(member.name)),
-        )
+        .set_thumbnail(url=member.avatar_url)
+        .set_image(url=f"attachment://{filename.replace(' ', '_')}")
+    )
+    channel = bot.get_channel(758649904012197908)
+    await channel.send(
+        f"{member.mention} Selamat datang!",
+        embed=embed,
+        file=discord.File(fp, filename),
+    )
 
 
-@bot.event
+@bot.listen()
 async def on_message(message):
     if message.author == bot.user:
         return
-    await bot.process_commands(message)
+
+    if message.author.id in immune:
+        return
+
     # ngasi prefix kalo ditag
     if bot.user.mentioned_in(message):
-        if message.author.id in immune:
-            return
-        elif message.content:
-            await message.channel.send(f"My Prefix is `{bot.command_prefix}`")
-            await bot.process_commands(message)
+        await message.channel.send(f"My Prefix is `{bot.command_prefix}`")
+
     # verifikasi form
-    if message.channel.id == 722024507707228160:
-        if message.author.id in immune:
-            return
-        channel = bot.get_channel(722024507707228160)
-        raw = message.content.split("\n")
-        nama = ""
-        asal = ""
-        sekolah = ""
-        kerja = ""
-        tau = ""
-        bahasa = ""
-        hobby = ""
-        for data in raw:
-            data = data.split("?")
-            if (data[0]).lower() == "siapa nama kamu":
-                nama = data[1]
-            elif (data[0]).lower() == "asal dari mana":
-                asal = data[1]
-            elif (data[0]).lower() == "sekolah / kuliah di mana":
-                sekolah = data[1]
-            elif (data[0]).lower() == "bekerja di mana":
-                kerja = data[1]
-            elif (data[0]).lower() == "dari mana tau wpu":
-                tau = data[1]
-            elif (data[0]).lower() == "bahasa pemrograman favorit":
-                bahasa = data[1]
-            elif (data[0]).lower() == "hobby / interest":
-                hobby = data[1]
-        if (nama == "" or asal == "" or sekolah == "" or kerja == "" or tau == "" or bahasa == "" or hobby == ""):
-            await message.add_reaction("\U0000274c")
-            salah = await channel.send(
-                f"{message.author.mention}, tolong masukkan data sesuai format!"
-            )
-            await asyncio.sleep(5)
-            await message.delete()
-            await salah.delete()
-            await bot.process_commands(message)
-        else:
-            await message.add_reaction("\U00002705")
-            user = message.author
-            role = get(user.guild.roles, id=730328477160439878)
-            await user.add_roles(role)
-            await channel.send(
-                f"Terimakasih {message.author.mention}, sudah perkenalan sesuai format. Salam kenal!"
-            )
-            await bot.process_commands(message)
-            channel1 = bot.get_channel(854593552390029322)
-            channel2 = bot.get_channel(855763615093358603)
-            embed = discord.Embed(
-                color=orange, title="Perkenalan", description=f"```{message.content}```"
-            )
-            embed.set_author(
-                name=message.author.name, icon_url=message.author.avatar_url
-            )
-            await channel1.send(embed=embed)
-            await channel2.send(embed=embed)
+    if message.channel.id != 722024507707228160:
+        return
+
+    raw = message.content.split("\n")
+    pertanyaan = [
+        "siapa nama kamu",
+        "asal dari mana",
+        "sekolah / kuliah di mana",
+        "bekerja di mana",
+        "dari mana tau wpu",
+        "bahasa pemrograman favorit",
+        "hobby / interest",
+    ]
+    for data in raw:
+        split = data.split("?")
+        tanya = split.pop(0).lower()
+        if not split or not split.pop(0).strip():
+            # Jawaban tidak valid
+            break
+
+        try:
+            pertanyaan.remove(tanya)
+        except ValueError:
+            continue
+
+    if pertanyaan:
+        await message.add_reaction("\U0000274c")
+        salah = await message.channel.send(
+            f"{message.author.mention}, tolong masukkan data sesuai format!"
+        )
+        await asyncio.sleep(5)
+        await message.delete()
+        await salah.delete()
+        return
+
+    await message.add_reaction("\U00002705")
+    role = message.guild.get_role(730328477160439878)
+    await message.author.add_roles(role)
+    await message.channel.send(
+        f"Terimakasih {message.author.mention}, sudah perkenalan sesuai format. Salam kenal!"
+    )
+    channel1 = bot.get_channel(854593552390029322)
+    channel2 = bot.get_channel(855763615093358603)
+    embed = discord.Embed(
+        color=orange, title="Perkenalan", description=f"```{message.content}```"
+    )
+    embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+    await channel1.send(embed=embed)
+    await channel2.send(embed=embed)
 
 
 # ini buat ngeremind format formnya
@@ -358,7 +355,7 @@ async def on_command(ctx):
     channel = bot.get_channel(854593500137652226)
     embed = discord.Embed(
         title=f"{ctx.author.name} used a command!",
-        description=f"{ctx.message.content}",
+        description=ctx.message.content,
         colour=discord.Color.orange(),
     )
     await channel.send("––––––––––––––––––––––––––––––––––––––––––––––––", embed=embed)
@@ -369,7 +366,7 @@ async def on_command_completion(ctx):
     channel = bot.get_channel(854593500137652226)
     embed = discord.Embed(
         title=f"Completed {ctx.author.name}'s command!",
-        description=f"{ctx.message.content}",
+        description=ctx.message.content,
         colour=discord.Color.gold(),
     )
     await channel.send(embed=embed)

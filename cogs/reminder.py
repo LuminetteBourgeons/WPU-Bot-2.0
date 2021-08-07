@@ -1,11 +1,13 @@
-import discord
-from discord.ext import commands
 import asyncio
 
+import discord
+from discord.ext import commands
+
+
 class Reminder(commands.Cog):
-    def __init__(self,bot):
-      self.bot=bot
-    
+    def __init__(self, bot):
+        self.bot = bot
+
     @commands.command()
     async def reminder(self, ctx, time, *, reminder):
         embed = discord.Embed(color=discord.Colour.orange())
@@ -23,22 +25,21 @@ class Reminder(commands.Cog):
             seconds += int(time[:-1])
             counter = f"{seconds} second(s)"
         if seconds == 0:
-            embed.add_field(name='Warning',
-                            value='Please specify a proper duration :(')
+            embed.add_field(name="Warning", value="Please specify a proper duration :(")
         elif seconds > 7776000:
             embed.add_field(
-                name='Warning',
-                value=
-                'You have specified a too long duration!\nMaximum duration is 90 days.'
+                name="Warning",
+                value="You have specified a too long duration!\nMaximum duration is 90 days.",
             )
         else:
-            await ctx.send(
-                f"Alright, I will remind you about {reminder} in {counter}.")
+            await ctx.send(f"Alright, I will remind you about {reminder} in {counter}.")
             await asyncio.sleep(seconds)
-            await ctx.author.send(f"Hi, you asked me to remind you about {reminder} {counter} ago.")
+            await ctx.author.send(
+                f"Hi, you asked me to remind you about {reminder} {counter} ago."
+            )
             return
         await ctx.send(embed=embed)
 
-def setup(bot):
-  bot.add_cog(Reminder(bot))
 
+def setup(bot):
+    bot.add_cog(Reminder(bot))
