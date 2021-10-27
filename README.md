@@ -34,7 +34,9 @@ Welcome image, form checker, assign roles by filling forms
 
 ## OWNER'S ONLY:
 > `;say` 
+> 
 > Presence changing commands (see main.py for more)
+> 
 > Introduction manual loop for `#perkenalan` channel (see main.py for more)
 
 <br>
