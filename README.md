@@ -51,6 +51,8 @@ Assign roles by react, profanity filter, leveling command, youtube update notifi
 
 ## Special thanks to:
 
-- [MANH21](https://github.com/manh21)
+- [Om Komodo](https://github.com/manh21)
+- [Om Arfy](https://github.com/slowy07)
+- [Om Nori](https://github.com/norinorin)
 - [Sandhika Galih](https://github.com/sandhikagalih)
 - [Discord.py Server](https://discord.com/invite/r3sSKJJ)
