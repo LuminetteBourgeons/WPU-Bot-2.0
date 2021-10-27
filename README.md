@@ -32,6 +32,13 @@ Welcome image, form checker, assign roles by filling forms
 
 <br>
 
+## OWNER'S ONLY:
+> `;say` 
+> Presence changing commands (see main.py for more)
+> Introduction manual loop for `#perkenalan` channel (see main.py for more)
+
+<br>
+
 ## On Development:
 
 Assign roles by react, profanity filter, leveling command, youtube update notifier
